@@ -31,6 +31,10 @@ dcbikeshare <- dcbikeshare %>%
   )
 ```
 
+```{r}
+dcbikeshare_august <- read_csv("202008-capitalbikeshare-tripdata.csv") 
+```
+
 Recode the binary variables holiday and workingday to be factors with levels no (0) and yes (1), with no as the baseline level.
 
 ```{r}
