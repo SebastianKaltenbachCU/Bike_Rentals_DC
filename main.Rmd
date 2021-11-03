@@ -12,6 +12,7 @@ Load the packages we need for this tutorial using the chunk below.
 library(tidyverse)
 library(tidymodels)
 library(dsbox)
+library(lubridate)
 ```
 
 ## Recoding Data
@@ -29,10 +30,6 @@ dcbikeshare <- dcbikeshare %>%
     ),
     season = fct_relevel(season, "spring", "summer", "fall", "winter")
   )
-```
-
-```{r}
-dcbikeshare_august <- read_csv("202008-capitalbikeshare-tripdata.csv") 
 ```
 
 Recode the binary variables holiday and workingday to be factors with levels no (0) and yes (1), with no as the baseline level.
@@ -253,3 +250,24 @@ rm_interaction <- linear_reg() %>%
         windspeed_raw, data = dcbikeshare)
 glance(rm_interaction)$adj.r.squared
 ```
+
+## Additional task 
+
+Analysis of the bikesharing data in September 2021
+
+```{r}
+dcbikeshare_sep <- read_csv("202109-capitalbikeshare-tripdata.csv") 
+
+```
+
+```{r}
+dcbikeshare_sep <- dcbikeshare_sep %>% 
+  separate(started_at, c("started_date", "started_time"), " ") %>%
+  mutate(started_date = ymd(started_date),
+         started_time = strptime(x = started_time, format = "%H:%M:%S")) %>%
+  separate(ended_at, c("ended_date", "ended_time"), " ") %>%
+  mutate(ended_date = ymd(ended_date)) 
+  
+  #filter(started_date == "2021-09-01")
+```
+
