@@ -1,0 +1,35 @@
+---
+title: "Bike Rentals in D.C."
+author: "Sebastian Kaltenbach"
+date: "2021-10-31"
+output: html_notebook
+---
+## Packages
+
+Load the packages we need for this tutorial using the chunk below.
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(tidymodels)
+library(dsbox)
+library(lubridate)
+```
+
+Analysis of the bikesharing data in September 2021
+
+```{r}
+dcbikeshare_sep <- read_csv("202109-capitalbikeshare-tripdata.csv") 
+```
+```{r}
+dcbikeShare_clean <- dcbikeshare_sep %>%
+  mutate(started_at = ymd_hms(started_at),
+         ended_at = ymd_hms(ended_at)) %>%
+  filter(mday(started_at) == 1,
+         mday(ended_at) == 1) %>%
+  mutate(start_hour = hour(started_at), duration = hour(ended_at) - start_hour)
+```
+
+```{r}
+ggplot(data = dcbikeShare_clean, mapping = aes(x=start_hour)) + 
+  geom_histogram()
+```
