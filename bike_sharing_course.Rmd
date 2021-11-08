@@ -46,12 +46,17 @@ df4 <- df1 %>% select(rideable_type, start = started_at, end = ended_at) %>%
 Can we plot over the entire month.
 
 ```{r}
-df4 %>% mutate(day = mday(time)) %>%
-  ggplot(aes(time, riders)) +
+df4 %>% mutate(day = mday(time), 
+               day_label = wday(time, label = TRUE), 
+               time_mod = (hour(time) * 60 + minute(time)) / 60) %>%
+  ggplot(aes(time_mod, riders)) +
   geom_point(size = .5, alpha = .02) +
-  facet_wrap(~day, ncol = 7)
+  facet_wrap(~ day, ncol = 7) +
+  labs(titel = "Distribution of Bike sharing in D.C.", 
+       subtitle = "Analysis: September 2021",
+       x = "Hours of day [h]",
+       y = "Amount of riders [-]")
 ```
 ToDo:
 
-improve on facetting to get a nicer plot for each daily profile
-
+improve on faceting to get a nicer plot for each daily profile
