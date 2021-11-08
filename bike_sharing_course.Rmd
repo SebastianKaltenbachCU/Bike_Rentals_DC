@@ -49,6 +49,9 @@ Can we plot over the entire month.
 df4 %>% mutate(day = mday(time)) %>%
   ggplot(aes(time, riders)) +
   geom_point(size = .5, alpha = .02) +
-  facet_wrap(~day)
+  facet_wrap(~day, ncol = 7)
 ```
+ToDo:
+
+improve on facetting to get a nicer plot for each daily profile
 
