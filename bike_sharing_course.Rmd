@@ -13,23 +13,42 @@ library(tidyverse)
 library(tidymodels)
 library(dsbox)
 library(lubridate)
+library(janitor)
 ```
 
 Analysis of the bikesharing data in September 2021
 
 ```{r}
-dcbikeshare_sep <- read_csv("202109-capitalbikeshare-tripdata.csv") 
-```
-```{r}
-dcbikeShare_clean <- dcbikeshare_sep %>%
-  mutate(started_at = ymd_hms(started_at),
-         ended_at = ymd_hms(ended_at)) %>%
-  filter(mday(started_at) == 1,
-         mday(ended_at) == 1) %>%
-  mutate(start_hour = hour(started_at), duration = hour(ended_at) - start_hour)
+df1 <- read_csv("202109-capitalbikeshare-tripdata.csv") %>% clean_names()
 ```
 
 ```{r}
-ggplot(data = dcbikeShare_clean, mapping = aes(x=start_hour)) + 
-  geom_histogram()
+df2 <- df1 %>% filter(mday(started_at) == 1)
 ```
+
+```{r}
+df3 <- df2 %>% mutate(hr = hour(started_at), dur = ended_at - started_at)
+```
+
+## Computing ridership vs. time
+
+```{r}
+df4 <- df1 %>% select(rideable_type, start = started_at, end = ended_at) %>%
+  pivot_longer(cols = start:end, names_to = "type", values_to = "time") %>%
+  arrange(time) %>%
+  mutate(inc = case_when(
+    type == "start" ~ 1,
+    type == "end" ~ -1
+  ),
+  riders = cumsum(inc))
+```
+
+Can we plot over the entire month.
+
+```{r}
+df4 %>% mutate(day = mday(time)) %>%
+  ggplot(aes(time, riders)) +
+  geom_point(size = .5, alpha = .02) +
+  facet_wrap(~day)
+```
+
